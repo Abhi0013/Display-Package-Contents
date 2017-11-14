@@ -1,0 +1,40 @@
+showPackageObjects <- function (packageName) {
+  list <- objects(packageName)
+  index <- grep('^[a-zA-Z][a-zA-Z0-9._]*', list)
+  list <- list[index]
+  objlist <- data.frame(name=list,prim=FALSE,func=FALSE,object=FALSE,constant=FALSE,stringsAsFactors=F)
+  for (i in 1:nrow(objlist)) {
+    funcname <- objlist$name[i]
+    if (exists(funcname)) {
+      obj <- get(funcname)
+      if (is.primitive(obj)) {
+        objlist$prim[i] <- TRUE
+      }
+      if (is.function(obj)) {
+        objlist$func[i] <- TRUE
+      }
+      if (is.object(obj)) {
+        objlist$object[i] <- TRUE
+      }
+      if (is.vector(obj)) {
+        objlist$constant[i] <- TRUE
+      }
+      
+      
+    }  
+  }
+
+  cat("Primitive functions: \n")
+  cat(objlist$name[objlist$prim],sep = ",")
+  cat("\n")
+  cat("Non-prim functions: \n")
+  cat(objlist$name[objlist$func  &  !objlist$prim],sep = ",")
+  cat("\n")
+  cat("Constants: \n")
+  cat(objlist$name[objlist$constant], sep = ",")
+  cat("\n")
+  cat("Objects: \n")
+  cat(objlist$name[objlist$object],sep = ",")
+  
+}
+showPackageObjects("package:base")
